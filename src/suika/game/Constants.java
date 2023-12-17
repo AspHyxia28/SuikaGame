@@ -34,7 +34,7 @@ public class Constants {
     public static final double DENSITY = 0.001;
     public static final double ELASTICITY = 0.1;
     public static final int IMPULSE = 10000;
-    public static final int GRAVITY = 2000;
+    public static final int GRAVITY = 9000;
     public static final double DAMPING = 0.8;
     public static final int NEXT_DELAY = FPS;
     public static final double BIAS = 0.00001;

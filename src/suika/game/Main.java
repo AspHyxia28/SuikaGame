@@ -26,8 +26,19 @@ public class Main {
         frame.setSize(WIDTH, HEIGHT);
         frame.setVisible(true);
         frame.setResizable(false);
+        frame.gameLoop();
     }
 
+    public static class DrawingPanel extends JPanel {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            // Your drawing code here...
+        }
+    }
+    
     @SuppressWarnings("serial")
     private static class DrawingFrame extends JFrame {
         private World world;
@@ -47,7 +58,9 @@ public class Main {
             nextParticle = new PreParticle(WIDTH / 2, new Random().nextInt(5));
 
             gameOver = false;
-
+            
+          Main.DrawingPanel panel = new Main.DrawingPanel();
+          this.add(panel);
             // Add a MouseListener to the frame
             addMouseListener(new CustomMouseListener());
         }
@@ -74,6 +87,19 @@ public class Main {
                 nextParticle.draw(g2d);
             }
         }
+        
+        public void gameLoop() {
+        	while(true) {
+        		world.update(1.0/60.0);
+        		repaint();
+        		try {
+        			Thread.sleep(1000/60);
+        		}
+        		catch(InterruptedException e) {
+        			e.printStackTrace();
+        		}
+        	}
+        }
 
         // Custom MouseListener to handle left-click events
         private class CustomMouseListener implements MouseListener {
@@ -81,7 +107,7 @@ public class Main {
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
                     int mouseX = e.getX();
-                    int mouseY = e.getY();
+                    int mouseY = 0;
 
                     // Generate a random integer for n
                     int n = new Random().nextInt(11);  // Adjust the argument to Random().nextInt() as needed
