@@ -1,12 +1,7 @@
-package suika.game;
-
-import org.dyn4j.dynamics.World;
-import org.dyn4j.geometry.Circle;
-import org.dyn4j.geometry.Vector2;
+package suika.game;	
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,20 +9,25 @@ import java.util.Map;
 import java.util.Random;
 
 import javax.swing.JFrame;
+import javax.swing.Timer;
+
+import org.dyn4j.dynamics.World;
+import org.dyn4j.geometry.Circle;
+import org.dyn4j.geometry.Vector2;
 
 @SuppressWarnings("serial")
-public class DrawingFrame extends JFrame implements KeyListener {
+public class DrawingFrame extends JFrame implements MouseListener, MouseMotionListener, ActionListener {
     private World world;
     private List<Particle> particles;
     private PreParticle nextParticle;
     private boolean gameOver;
     private Map<Circle, Particle> mapper;
-
+    
     public DrawingFrame() {
         setTitle("Suika");
         world = new World();
         world.setGravity(new Vector2(0, Constants.GRAVITY));
-        world.getSettings().setBaumgarte(Constants.BIAS);            
+        world.getSettings().setBaumgarte(Constants.BIAS);
        
         particles = new ArrayList<>();
         mapper = new HashMap<>();
@@ -36,11 +36,27 @@ public class DrawingFrame extends JFrame implements KeyListener {
 
         gameOver = false;
 
-        // Add this as a KeyListener
-        this.addKeyListener(this);
+        this.addMouseListener(this);
+        this.addMouseMotionListener(this);
+
         this.setFocusable(true);
+        
+        Timer timer = new Timer((1000 / Constants.FPS), this);
+        timer.start();
     }
 
+    public void actionPerformed(ActionEvent e) {
+        update();
+        repaint();
+    }
+
+    private void update() {
+        int mouseX = MouseInfo.getPointerInfo().getLocation().x - this.getLocationOnScreen().x;
+        nextParticle.setX(mouseX);
+        System.out.println("Mouse X: " + mouseX);
+    }
+
+    
     @Override
     public void paint(Graphics g) {
         super.paint(g);
@@ -64,31 +80,43 @@ public class DrawingFrame extends JFrame implements KeyListener {
         }
     }
 
-    // KeyListener methods
     @Override
-    public void keyPressed(KeyEvent e) {
-        int key = e.getKeyCode();
-
-        if (key == KeyEvent.VK_A) {
-            // Move the nextParticle to the left
-            nextParticle.setX(nextParticle.getX() - 10);
-        } else if (key == KeyEvent.VK_D) {
-            // Move the nextParticle to the right
-            nextParticle.setX(nextParticle.getX() + 10);
-        } else if (key == KeyEvent.VK_ENTER) {
-            // Release the nextParticle
+    public void mouseClicked(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
             particles.add(nextParticle.release(world, mapper));
             nextParticle = new PreParticle(Constants.windowWidth / 2, new Random().nextInt(5));
         }
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {
-        // Handle key release events if necessary
+    public void mouseMoved(MouseEvent e) {
+        nextParticle.setX(e.getX());
+    }
+
+    // Implement other methods of MouseListener and MouseMotionListener if needed
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        // Handle mouse press events
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {
-        // Handle key typed events if necessary
+    public void mouseReleased(MouseEvent e) {
+        // Handle mouse release events
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        // Handle mouse enter events
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        // Handle mouse exit events
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        // Handle mouse drag events
     }
 }
