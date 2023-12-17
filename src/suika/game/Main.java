@@ -1,6 +1,7 @@
 package suika.game;
 
 import javax.swing.*;
+import java.util.HashMap;
 import org.dyn4j.dynamics.World;
 import org.dyn4j.geometry.Circle;
 import org.dyn4j.geometry.Vector2;
@@ -33,7 +34,7 @@ public class Main {
         private List<Particle> particles;
         private PreParticle nextParticle;
         private boolean gameOver;
-		public Map<Circle, Particle> mapper;
+        public Map<Circle, Particle> mapper;
 
         public DrawingFrame() {
             setTitle("Suika");
@@ -42,7 +43,7 @@ public class Main {
             world.getSettings().setBaumgarte(BIAS);
 
             particles = new ArrayList<>();
-
+            mapper = new HashMap<>();
             nextParticle = new PreParticle(WIDTH / 2, new Random().nextInt(5));
 
             gameOver = false;
@@ -79,13 +80,20 @@ public class Main {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    particles.add(nextParticle.release(world, mapper));
-                    nextParticle = new PreParticle(Constants.windowWidth / 2, new Random().nextInt(5));
+                    int mouseX = e.getX();
+                    int mouseY = e.getY();
+
+                    // Generate a random integer for n
+                    int n = new Random().nextInt(11);  // Adjust the argument to Random().nextInt() as needed
+
+                    Particle newParticle = new Particle(new Vector2(mouseX, mouseY), n, world, mapper);
+
+                    particles.add(newParticle);
                     repaint();  // Refresh the display
                 }
             }
 
-            // Other MouseListener methods
+            // Other MouseListener methods...
             @Override
             public void mousePressed(MouseEvent e) {
             }
