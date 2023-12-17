@@ -1,14 +1,17 @@
 package suika.game;
 
+import javax.swing.*;
 import org.dyn4j.dynamics.World;
+import org.dyn4j.geometry.Circle;
 import org.dyn4j.geometry.Vector2;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
-
-import javax.swing.JFrame;
 
 public class Main {
     private static final int WIDTH = Constants.windowWidth;
@@ -23,34 +26,37 @@ public class Main {
         frame.setVisible(true);
         frame.setResizable(false);
     }
-    
+
     @SuppressWarnings("serial")
     private static class DrawingFrame extends JFrame {
         private World world;
         private List<Particle> particles;
         private PreParticle nextParticle;
         private boolean gameOver;
+		public Map<Circle, Particle> mapper;
 
         public DrawingFrame() {
             setTitle("Suika");
             world = new World();
             world.setGravity(new Vector2(0, GRAVITY));
-            world.getSettings().setBaumgarte(BIAS);            
-           
+            world.getSettings().setBaumgarte(BIAS);
+
             particles = new ArrayList<>();
 
             nextParticle = new PreParticle(WIDTH / 2, new Random().nextInt(5));
 
             gameOver = false;
+
+            // Add a MouseListener to the frame
+            addMouseListener(new CustomMouseListener());
         }
-        
-        
+
         @Override
         public void paint(Graphics g) {
             super.paint(g);
 
             Graphics2D g2d = (Graphics2D) g;
-            
+
             Wall left = new Wall(new Vector2(Constants.A[0], Constants.A[1]), new Vector2(Constants.B[0], Constants.B[1]), world);
             Wall bottom = new Wall(new Vector2(Constants.B[0], Constants.B[1]), new Vector2(Constants.C[0], Constants.C[1]), world);
             Wall right = new Wall(new Vector2(Constants.C[0], Constants.C[1]), new Vector2(Constants.D[0], Constants.D[1]), world);
@@ -59,12 +65,41 @@ public class Main {
                 left.draw(g2d);
                 bottom.draw(g2d);
                 right.draw(g2d);
-                
+
                 for (Particle particle : particles) {
                     particle.draw(g2d);
                 }
 
                 nextParticle.draw(g2d);
+            }
+        }
+
+        // Custom MouseListener to handle left-click events
+        private class CustomMouseListener implements MouseListener {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    particles.add(nextParticle.release(world, mapper));
+                    nextParticle = new PreParticle(Constants.windowWidth / 2, new Random().nextInt(5));
+                    repaint();  // Refresh the display
+                }
+            }
+
+            // Other MouseListener methods
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
             }
         }
     }

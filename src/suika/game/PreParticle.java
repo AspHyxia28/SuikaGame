@@ -41,8 +41,4 @@ public class PreParticle {
     public Particle release(World world, Map<Circle, Particle> mapper) {
         return new Particle(new Vector2(x, Constants.PAD[1] / 2), n, world, mapper);
     }
-
-	public double getX() {
-		return x;
-	}
 }
